@@ -16,8 +16,25 @@ export default {
       }
     };
   },
+  computed: {
+    movimentacaoList() {
+      return this.movimentacoes.map(m => ({
+        ...m,
+        data: typeof m.data === 'string'
+            ? m.data
+            : new Date(m.data?.date.split(' ')[0]).toISOString().split('T')[0],
+      }))
+    }
+  },
   methods: {
     salvarMovimentacao() {
+      console.log(this.formMovimentacao)
+      api.post('/movimentacao/new', {
+        ...this.formMovimentacao,
+        descricao: this.formMovimentacao.descricao ?? '',
+        data: this.formMovimentacao.data + ' 00:00',
+        id: this.formMovimentacao.id || undefined
+      })
       if (this.formMovimentacao.id) {
         // Update existing movimentacao
         const index = this.movimentacoes.findIndex(m => m.id === this.formMovimentacao.id);
@@ -30,10 +47,17 @@ export default {
       this.limparFormulario();
     },
     editarMovimentacao(movimentacao) {
+      console.log(movimentacao)
       this.formMovimentacao = { ...movimentacao };
     },
-    excluirMovimentacao(id) {
-      this.movimentacoes = this.movimentacoes.filter(m => m.id !== id);
+    async excluirMovimentacao(id) {
+      const { data } = await api.post('/movimentacao/delete/' + id)
+      if (data.valor)
+        this.movimentacoes = this.movimentacoes.filter(m => m.id !== id);
+      else {
+        // alert('Erro ao excluir a movimentação')
+        console.log(data)
+      }
     },
     limparFormulario() {
       this.formMovimentacao = {
@@ -57,6 +81,7 @@ export default {
     <h1>Cadastro de Movimentações</h1>
 
     <form @submit.prevent="salvarMovimentacao">
+
       <div>
         <label for="nome">Nome:</label>
         <input id="nome" v-model="formMovimentacao.nome" required>
@@ -88,9 +113,9 @@ export default {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="movimentacao in movimentacoes" :key="movimentacao.id">
+      <tr v-for="movimentacao in movimentacaoList" :key="movimentacao.id">
         <td>{{ movimentacao.nome }}</td>
-        <td>{{ movimentacao.data }}</td>
+        <td>{{ new Date(movimentacao.data).toLocaleDateString('pt-BR') }}</td>
         <td>{{ movimentacao.descricao }}</td>
         <td>{{ movimentacao.valor }}</td>
         <td>

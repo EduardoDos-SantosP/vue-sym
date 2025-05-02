@@ -1,72 +1,68 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView, RouterLink } from 'vue-router'
 </script>
 
 <template>
-  <RouterView />
+  <div class="app-container">
+    <!-- Menu Lateral -->
+    <aside class="sidebar">
+      <h2>Menu</h2>
+      <nav>
+        <ul>
+          <li><RouterLink to="/">Home</RouterLink></li>
+          <li><RouterLink to="/movimentacao">Movimentação</RouterLink></li>
+          <li><RouterLink to="/movimentacao-item">Movimentação Item</RouterLink></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-container {
+  display: flex;
+  min-height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.sidebar {
+  width: 220px;
+  background-color: #2c3e50;
+  color: #fff;
+  padding: 20px;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.sidebar h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.sidebar ul {
+  list-style: none;
+  padding: 0;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.sidebar li {
+  margin: 10px 0;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.sidebar a {
+  color: #ecf0f1;
+  text-decoration: none;
 }
 
-nav a:first-of-type {
-  border: 0;
+.sidebar a.router-link-active {
+  font-weight: bold;
+  text-decoration: underline;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f4f4f4;
 }
 </style>
