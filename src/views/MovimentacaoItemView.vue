@@ -10,14 +10,14 @@
       </div>
       <div>
         <label for="descricao-item">Descrição:</label>
-        <input id="descricao-item" v-model="formItem.descricao" required />
+        <input id="descricao-item" v-model="formItem.descricao" />
       </div>
       <div>
         <label for="valor-item">Valor:</label>
         <input id="valor-item" type="number" v-model.number="formItem.valor" required />
       </div>
-      <button type="submit">Adicionar</button>
-      <button v-if="formItem.id" type="button" @click="limparForm">Cancelar</button>
+      <button type="submit">Salvar</button>
+      <button :disabled="!formItem.id" type="button" @click="limparForm">Cancelar</button>
     </form>
 
     <!-- Tabela de itens -->
@@ -66,7 +66,15 @@ export default {
       if (this.formItem.id) {
         // PUT /movimentacao/:id/itens/:itemId
       } else {
-        // POST /movimentacao/:id/itens
+        const payload = this.formItem
+        delete payload.id
+        const response = await api.post(`/movimentacao/${this.id}/items/save`, payload)
+        const item =  response.data;
+        if (!item.id) {
+          console.log(item)
+          return alert(response.statusText)
+        }
+        this.itens.push(item)
       }
       await this.carregarItens();
       this.limparForm();
@@ -75,8 +83,18 @@ export default {
       this.formItem = { ...item };
     },
     async excluirItem(itemId) {
-      // DELETE /movimentacao/:id/itens/:itemId
-      await this.carregarItens();
+      const opt = prompt('Tem certeza que deseja excluir esse item? (s/n)')
+      if (opt.toLowerCase() !== 's') return;
+
+      const response = await api.delete('/movimentacao/delete/' + itemId)
+      if (response.status !== 200) {
+        console.error(response.data)
+        return alert(response.statusText)
+      }
+      this.itens.splice(
+          this.itens.findIndex(i => i.id === itemId),
+          1
+      )
     },
     limparForm() {
       this.formItem = { id: null, nome: '', descricao: '', valor: null };
