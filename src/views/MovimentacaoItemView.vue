@@ -63,30 +63,29 @@ export default {
       this.itens = response.data.items
     },
     async salvarItem() {
-      if (this.formItem.id) {
-        // PUT /movimentacao/:id/itens/:itemId
-      } else {
-        const payload = this.formItem
-        delete payload.id
-        const response = await api.post(`/movimentacao/${this.id}/items/save`, payload)
-        const item =  response.data;
-        if (!item.id) {
-          console.log(item)
-          return alert(response.statusText)
-        }
-        this.itens.push(item)
+      const payload = this.formItem
+      payload.id ??= undefined;
+      const response = await api.post(`/movimentacao/${this.id}/items/save`, payload)
+      const item =  response.data;
+      if (!item.id) {
+        console.log(item)
+        return alert(response.statusText)
       }
-      await this.carregarItens();
+
+      if (payload.id)
+        this.itens.splice(
+            this.itens.findIndex(i => i.id === payload.id),
+            1, payload
+        )
+      else this.itens.push(payload)
+
       this.limparForm();
     },
     editarItem(item) {
       this.formItem = { ...item };
     },
     async excluirItem(itemId) {
-      const opt = prompt('Tem certeza que deseja excluir esse item? (s/n)')
-      if (opt.toLowerCase() !== 's') return;
-
-      const response = await api.delete('/movimentacao/delete/' + itemId)
+      const response = await api.delete('/movimentacao/deleteitem/' + itemId)
       if (response.status !== 200) {
         console.error(response.data)
         return alert(response.statusText)
