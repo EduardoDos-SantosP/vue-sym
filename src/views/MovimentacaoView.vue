@@ -38,20 +38,20 @@ export default {
       if (this.formMovimentacao.id) {
         // Update existing movimentacao
         const index = this.movimentacoes.findIndex(m => m.id === this.formMovimentacao.id);
-        this.movimentacoes[index] = { ...this.formMovimentacao };
+        this.movimentacoes[index] = {...this.formMovimentacao};
       } else {
         // Add new movimentacao
         const newId = this.movimentacoes.length + 1;
-        this.movimentacoes.push({ ...this.formMovimentacao, id: newId });
+        this.movimentacoes.push({...this.formMovimentacao, id: newId});
       }
       this.limparFormulario();
     },
     editarMovimentacao(movimentacao) {
       console.log(movimentacao)
-      this.formMovimentacao = { ...movimentacao };
+      this.formMovimentacao = {...movimentacao};
     },
     async excluirMovimentacao(id) {
-      const { data } = await api.post('/movimentacao/delete/' + id)
+      const {data} = await api.post('/movimentacao/delete/' + id)
       if (data.valor)
         this.movimentacoes = this.movimentacoes.filter(m => m.id !== id);
       else {
@@ -67,10 +67,13 @@ export default {
         descricao: null,
         valor: null,
       };
+    },
+    verItens(id) {
+      this.$router.push({name: 'movimentacaoItens', params: {id}});
     }
   },
   async mounted() {
-    const { data } = await api.get('/movimentacao/all');
+    const {data} = await api.get('/movimentacao/all');
     this.movimentacoes = data;
   }
 }
@@ -96,7 +99,7 @@ export default {
       </div>
       <div>
         <label for="valor">Valor:</label>
-        <input id="valor" type="number" step="0.01" v-model="formMovimentacao.valor" required>
+        <input id="valor" type="number" step="1" v-model="formMovimentacao.valor" required>
       </div>
       <button type="submit">Salvar</button>
     </form>
@@ -121,6 +124,7 @@ export default {
         <td>
           <button @click="editarMovimentacao(movimentacao)">Editar</button>
           <button @click="excluirMovimentacao(movimentacao.id)">Excluir</button>
+          <button @click="verItens(movimentacao.id)">Itens</button>
         </td>
       </tr>
       </tbody>

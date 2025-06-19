@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -10,22 +10,46 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
       path: '/login',
       name: 'login',
+      component: () => import('../views/LoginView.vue'),
+      
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      beforeEnter: (to) => {
+        localStorage.removeItem('token')
+        return {path: '/login'}
+      },
       component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/movimentacao',
-      name:'movimentacao',
+      name: 'movimentacao',
       component: () => import('../views/MovimentacaoView.vue'),
+      beforeEnter: (to) => {
+        if (to.path !== '/login') {
+          const token = localStorage.getItem('token')
+          if (!token)
+            return {
+              path: '/login?next=' + (to.path ?? ''),
+              query: {next: to.path}
+            }
+        }
+      }
+    },
+    {
+      path: '/movimentacao/:id/itens',
+      name: 'movimentacaoItens',
+      component: () => import('../views/MovimentacaoItemView.vue'),
+      props: true,
+      beforeEnter: (to) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          return {path: '/login', query: {next: to.fullPath}};
+        }
+      }
     }
   ],
 })
