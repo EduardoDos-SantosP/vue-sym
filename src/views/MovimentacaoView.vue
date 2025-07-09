@@ -13,7 +13,8 @@ export default {
         data: null,
         descricao: null,
         valor: null,
-      }
+      },
+      loading: false
     };
   },
   computed: {
@@ -73,8 +74,14 @@ export default {
     }
   },
   async mounted() {
-    const {data} = await api.get('/movimentacao/all');
-    this.movimentacoes = data;
+    try {
+      this.loading = true
+      const {data} = await api.get('/movimentacao/all');
+      this.movimentacoes = data;
+    }
+    finally {
+      this.loading = false
+    }
   }
 }
 </script>
@@ -116,7 +123,10 @@ export default {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="movimentacao in movimentacaoList" :key="movimentacao.id">
+      <tr v-if="loading">
+        <td colspan="5" style="text-align: center">Carregando...</td>
+      </tr>
+      <tr v-else v-for="movimentacao in movimentacaoList" :key="movimentacao.id">
         <td>{{ movimentacao.nome }}</td>
         <td>{{ new Date(movimentacao.data).toLocaleDateString('pt-BR') }}</td>
         <td>{{ movimentacao.descricao }}</td>

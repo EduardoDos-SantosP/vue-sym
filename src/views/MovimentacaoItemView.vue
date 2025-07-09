@@ -31,7 +31,10 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in itens" :key="item.id">
+      <tr v-if="loading">
+        <td colspan="5" style="text-align: center">Carregando...</td>
+      </tr>
+      <tr v-else v-for="item in itens" :key="item.id">
         <td>{{ item.nome }}</td>
         <td>{{ item.valor }}</td>
         <td>
@@ -53,14 +56,21 @@ export default {
     return {
       itens: [],
       formItem: { id: null, nome: '', descricao: '', valor: null },
+      loading: false
     };
   },
   methods: {
     async carregarItens() {
-      // chamar API para buscar itens de this.id
-      const response = await api.get(`/movimentacao/items/${this.id}`)
-      console.log(response)
-      this.itens = response.data.items
+      try {
+        this.loading = true
+        const response = await api.get(`/movimentacao/items/${this.id}`)
+        console.log(response)
+        this.formItem = response.data
+        this.itens = response.data.items
+      }
+      finally {
+        this.loading = false
+      }
     },
     async salvarItem() {
       const payload = this.formItem
@@ -69,7 +79,7 @@ export default {
       const item =  response.data;
       if (!item.id) {
         console.log(item)
-        return alert(response.statusText)
+        return //alert(response.statusText)
       }
 
       if (payload.id)
@@ -88,7 +98,7 @@ export default {
       const response = await api.delete('/movimentacao/deleteitem/' + itemId)
       if (response.status !== 200) {
         console.error(response.data)
-        return alert(response.statusText)
+        return //alert(response.statusText)
       }
       this.itens.splice(
           this.itens.findIndex(i => i.id === itemId),

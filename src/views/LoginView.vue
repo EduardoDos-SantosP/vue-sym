@@ -18,7 +18,7 @@ export default {
       const response = await api.post('/usuario/login', this.usuario);
       const { token, error } = response.data;
       if (error)
-        return alert(error.message);
+        // return alert(error.message);
       if (!token) return;
       localStorage.setItem('token', token);
       const nextRoute = new URLSearchParams(location.search).get('next') || '/';
