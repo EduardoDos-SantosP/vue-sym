@@ -50,6 +50,17 @@ const router = createRouter({
           return {path: '/login', query: {next: to.fullPath}};
         }
       }
+    },
+    {
+      path: '/chat-ai',
+      name: 'chatAi',
+      component: () => import('../views/ChatAi.vue'),
+      beforeEnter: (to) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          return {path: '/login', query: {next: to.fullPath}};
+        }
+      }
     }
   ],
 })
