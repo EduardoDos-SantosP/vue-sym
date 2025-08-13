@@ -1,14 +1,20 @@
 import axios from "axios";
 
 export const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: import.meta.env.VITE_SERVER_URL,
     validateStatus: status => true,
-    headers: {
+    /*headers: {
         get Authorization() {
-            const h = localStorage.getItem('token') ?? undefined
-            console.log(h)
-            return h
+            const token = localStorage.getItem('token') ?? undefined
+            console.log({token})
+            return token
         }
+    },*/
+    transformRequest: (data, headers) => {
+        const token = localStorage.getItem('token') ?? undefined
+        console.log({token})
+        headers.Authorization = token
+        return JSON.stringify(data)
     },
     transformResponse: (data, headers, status) => {
         data = JSON.parse(data)

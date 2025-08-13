@@ -55,8 +55,8 @@ export default {
       const renderer = new marked.Renderer();
       renderer.link = ({href, text}) =>
           `<a href="${href}" target="_blank" >${text}</a>`;
-
       marked.setOptions({ renderer });
+
       let html = marked.parse(text || "");
       html = DOMPurify.sanitize(html, {
         ADD_ATTR: ['target']

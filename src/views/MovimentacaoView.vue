@@ -52,7 +52,7 @@ export default {
       this.formMovimentacao = {...movimentacao};
     },
     async excluirMovimentacao(id) {
-      const {data} = await api.post('/movimentacao/delete/' + id)
+      const {data} = await api.get('/movimentacao/delete/' + id)
       if (data.valor)
         this.movimentacoes = this.movimentacoes.filter(m => m.id !== id);
       else {
@@ -77,7 +77,8 @@ export default {
     try {
       this.loading = true
       const {data} = await api.get('/movimentacao/all');
-      this.movimentacoes = data;
+      if (data?.length)
+        this.movimentacoes = data;
     }
     finally {
       this.loading = false
